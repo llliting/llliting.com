@@ -3,6 +3,9 @@ import { HashRouter as Router, Routes, Route } from 'react-router-dom';
 import { NavBar } from './components/NavBar';
 import { Home } from './pages/Home';
 import { SectionPage } from './pages/SectionPage';
+import { Trades } from './pages/Trades';
+import MetaPitch from './pages/articles/MetaPitch';
+import WealthRodApp from './pages/WealthRodApp';
 import { NAV_ITEMS } from './constants';
 
 // --- Types ---
@@ -312,13 +315,18 @@ const AppContent: React.FC = () => {
       <main className="relative z-10 flex flex-col min-h-screen">
         <Routes>
           <Route path="/" element={<Home onTriggerFireworks={triggerFireworks} onHoverName={handleHoverName} />} />
-          {NAV_ITEMS.map((item) => (
-            <Route
-              key={item.path}
-              path={item.path}
-              element={<SectionPage title={item.label} description={item.description} />}
-            />
-          ))}
+          <Route path="/wealth-rod/app" element={<WealthRodApp />} />
+          <Route path="/trades" element={<Trades />} />
+          <Route path="/trades/meta-pitch" element={<MetaPitch />} />
+          {NAV_ITEMS.flatMap(item => [item, ...(item.subItems || [])])
+            .filter(item => item.path !== '/trades')
+            .map((item) => (
+              <Route
+                key={item.path}
+                path={item.path}
+                element={<SectionPage title={item.label} description={item.description} />}
+              />
+            ))}
         </Routes>
       </main>
 

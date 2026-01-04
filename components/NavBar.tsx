@@ -54,18 +54,52 @@ export const NavBar: React.FC<NavBarProps> = ({ showNyBackground, setShowNyBackg
           {/* Desktop Menu - Centered */}
           <div className="hidden md:flex items-center space-x-16">
             {NAV_ITEMS.map((item) => (
-              <Link
-                key={item.label}
-                to={item.path}
-                className={`relative text-sm font-normal tracking-widest uppercase transition-all duration-300 group ${location.pathname === item.path
-                  ? 'text-white'
-                  : 'text-secondary hover:text-primary'
-                  }`}
-              >
-                {item.label}
-                <span className={`absolute left-1/2 -translate-x-1/2 -bottom-2 h-[1px] bg-primary/50 transition-all duration-300 ${location.pathname === item.path ? 'w-4' : 'w-0 group-hover:w-4'
-                  }`}></span>
-              </Link>
+              <div key={item.label} className="relative group">
+                {item.subItems ? (
+                  <>
+                    <button
+                      className={`relative text-sm font-normal tracking-widest uppercase transition-all duration-300 ${location.pathname.startsWith(item.path)
+                        ? 'text-white'
+                        : 'text-secondary hover:text-primary'
+                        }`}
+                    >
+                      {item.label}
+                      <span className={`absolute left-1/2 -translate-x-1/2 -bottom-2 h-[1px] bg-primary/50 transition-all duration-300 ${location.pathname.startsWith(item.path) ? 'w-4' : 'w-0 group-hover:w-4'
+                        }`}></span>
+                    </button>
+
+                    {/* Dropdown */}
+                    <div className="absolute left-1/2 -translate-x-1/2 top-full pt-6 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 ease-out transform group-hover:translate-y-0 translate-y-2">
+                      <div className="bg-[#1a120b]/95 backdrop-blur-md border border-white/10 rounded-sm py-4 min-w-[200px] shadow-2xl flex flex-col gap-1">
+                        {item.subItems.map((subItem) => (
+                          <Link
+                            key={subItem.label}
+                            to={subItem.path}
+                            className={`px-6 py-3 text-xs font-light tracking-widest uppercase transition-colors hover:bg-white/5 ${location.pathname === subItem.path
+                              ? 'text-white'
+                              : 'text-secondary hover:text-primary'
+                              }`}
+                          >
+                            {subItem.label}
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <Link
+                    to={item.path}
+                    className={`relative text-sm font-normal tracking-widest uppercase transition-all duration-300 group ${location.pathname === item.path
+                      ? 'text-white'
+                      : 'text-secondary hover:text-primary'
+                      }`}
+                  >
+                    {item.label}
+                    <span className={`absolute left-1/2 -translate-x-1/2 -bottom-2 h-[1px] bg-primary/50 transition-all duration-300 ${location.pathname === item.path ? 'w-4' : 'w-0 group-hover:w-4'
+                      }`}></span>
+                  </Link>
+                )}
+              </div>
             ))}
           </div>
 
@@ -100,14 +134,35 @@ export const NavBar: React.FC<NavBarProps> = ({ showNyBackground, setShowNyBackg
       >
         <div className="px-6 py-8 space-y-8 flex flex-col items-center justify-start h-full">
           {NAV_ITEMS.map((item) => (
-            <Link
-              key={item.label}
-              to={item.path}
-              className={`text-3xl font-light tracking-widest uppercase block transition-colors ${location.pathname === item.path ? 'text-white' : 'text-secondary hover:text-white'
-                }`}
-            >
-              {item.label}
-            </Link>
+            <div key={item.label} className="flex flex-col items-center gap-4">
+              {item.subItems ? (
+                <>
+                  <div className="text-3xl font-light tracking-widest uppercase text-secondary">
+                    {item.label}
+                  </div>
+                  {item.subItems.map((subItem) => (
+                    <Link
+                      key={subItem.label}
+                      to={subItem.path}
+                      className={`text-xl font-light tracking-widest uppercase block transition-colors ${location.pathname === subItem.path ? 'text-white' : 'text-secondary/70 hover:text-white'
+                        }`}
+                      onClick={() => setIsOpen(false)}
+                    >
+                      {subItem.label}
+                    </Link>
+                  ))}
+                </>
+              ) : (
+                <Link
+                  to={item.path}
+                  className={`text-3xl font-light tracking-widest uppercase block transition-colors ${location.pathname === item.path ? 'text-white' : 'text-secondary hover:text-white'
+                    }`}
+                  onClick={() => setIsOpen(false)}
+                >
+                  {item.label}
+                </Link>
+              )}
+            </div>
           ))}
         </div>
       </div>
