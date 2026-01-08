@@ -5,6 +5,8 @@ import { Home } from './pages/Home';
 import { SectionPage } from './pages/SectionPage';
 import { Trades } from './pages/Trades';
 import MetaPitch from './pages/articles/MetaPitch';
+import { Thoughts } from './pages/Thoughts';
+import QubieeAI from './pages/articles/QubieeAI';
 import WealthRodApp from './pages/WealthRodApp';
 import { NAV_ITEMS } from './constants';
 
@@ -318,8 +320,11 @@ const AppContent: React.FC = () => {
           <Route path="/wealth-rod/app" element={<WealthRodApp />} />
           <Route path="/trades" element={<Trades />} />
           <Route path="/trades/meta-pitch" element={<MetaPitch />} />
+          <Route path="/thoughts" element={<Thoughts />} />
+          <Route path="/thoughts/qubiee-ai" element={<QubieeAI />} />
+
           {NAV_ITEMS.flatMap(item => [item, ...(item.subItems || [])])
-            .filter(item => item.path !== '/trades')
+            .filter(item => item.path !== '/trades' && item.path !== '/thoughts')
             .map((item) => (
               <Route
                 key={item.path}

@@ -1,0 +1,72 @@
+﻿2025–early 2026: from vibe coding to systems thinking
+2025 was the year of vibe coding.
+With modern coding copilots, we built Qubiee in three months, something that would have taken a small team far longer not long ago. At the beginning of 2026, it feels like the right moment to pause and reflect: on what we shipped, what broke, what we fixed, and what it taught me about mastery, not just of code, but of building with AI.
+I’ll start with the AI system, because unexpectedly, it became the most joyful part of the build.
+________________
+
+
+Month 3: when AI enters the loop
+I’ll admit it: building agents was the most fun I had all year.
+Just two months earlier, my days were consumed by the unglamorous work that every “AI product” quietly depends on, cleaning question tags and company tags, validating keys and answer checkers, wrestling with LaTeX prompts and solutions, and writing Python regex formatters that occasionally “fixed” one issue by creating a larger stylistic mess somewhere else.
+For many nights, I opened seed files and returned to the good old ritual of fixing formatting line by line. Sanitizing the question bank alone took at least two weeks of spare time, far more than I expected. When the beta finally shipped, I could breathe again. I used that breathing room to step back and rebuild the question-loading pipeline properly.
+That was the turning point: moving from content cleanup to workflow design.
+________________
+
+
+Why agents are fun (and why they’re not trivial)
+Tool calling is easy. Constructing a workable solution is not.
+Agents are not magical. They are structured decisions. The real work lies in designing workflows that survive edge cases, route correctly, know when to ask for help, and remain cost-efficient enough to run in production.
+Answer checking is a simple example. When an answer is numeric, deterministic validation works well. But when a response is symbolic, conceptual, or phrased differently from the canonical solution, rule-based checks often cannot decide correctness. That is when we call the model.
+We feed the AI the question prompt and canonical solution and ask whether the user’s answer matches the canonical answer. If it does not, we run a second step: evaluate the user’s answer directly against the prompt and grade it using an explicit rubric. Even in this easy case, the workflow matters as much as the model itself.
+AI is powerful precisely because it can do many small things, but it only becomes reliable when those things are arranged deliberately.
+________________
+
+
+A tour of Qubiee’s current AI system
+Today, Qubiee’s AI supports several classes of workflows.
+1) Question-level help
+Each question is treated as a first-class object. The system provides question-specific explanations anchored to the question ID and its canonical solution.
+Hints are progressive and stateful. The system looks up hint history from cache, generates hints across two to three distinct aspects, tracks which stage the user is currently at, and caches each newly generated hint to avoid repetition while preserving continuity.
+2) General concept chat
+When no question ID is provided, the system enters a general mode, focusing on intuition, conceptual explanations, and targeted practice guidance without tying the conversation to a single prompt.
+3) Performance analysis with intelligent routing
+The system pulls user performance data from Firestore, including accuracy, topic breakdowns, and trend signals. It supports multi-tool queries, such as comparing a user’s performance against global aggregates.
+Routing is hybrid by design. High-confidence requests are handled cheaply and quickly through regex routes. Questions like “How am I doing?” or “What are my weak areas?” are resolved deterministically, while an LLM fallback handles the long tail of ambiguous or nuanced phrasing.
+4) Report management APIs
+Users can submit issue reports ranging from incorrect answer keys to duplicated questions or validation errors. The system automatically evaluates reports. High-confidence cases are processed automatically, while lower-confidence ones are escalated to admins. Each escalation still includes a suggested diagnosis to reduce review time.
+5) Question upload pipeline
+The upload pipeline detects question type, validates answer correctness, rephrases content into quant interview style, categorizes topics and difficulty, extracts tags, checks for similarity and duplication, generates sequential QIDs, validates generator and checker expressions, and finally saves the question to the appropriate Firebase collection while indexing it in the RAG system.
+It is a lot of moving pieces, and that is the point. Once you move beyond demos, AI stops being a single model call and starts looking like orchestration. Constraints, routing, and carefully designed interfaces between human judgment and machine inference begin to matter.
+________________
+
+
+Vibe coding, upgraded
+I started coding with Cursor during my summer internship, and since then, the experience itself has changed dramatically.
+Back in June, there was no way I would have trusted an agent to generate entire files from just a few sentences. I still remember opening files filled with emoji-led error prints and watching a simple 100-line script balloon into something ten times longer and far less readable than the original problem.
+Fast forward to now, and the difference is stark. With essentially the same development habits, I find that as long as the instructions are clear, I rarely need to make changes to what the agent produces. In some cases, I am even comfortable letting the agent take control of my computer to debug issues on its own.
+This shift is not just subjective. During the summer, I worked on an algorithmically heavy quant optimization project and tried the strongest models available at the time. None of them could produce a correct implementation. Revisiting that same class of problems today, it feels entirely plausible that state-of-the-art models might succeed where earlier ones consistently failed. It may simply be the right moment to present those problems again and be ready to be surprised.
+Working with AI coding tools also reshaped my engineering process.
+After half a year of building with Cursor, I’ve learned that results correlate strongly with how I specify the work. I no longer dump vague instructions and hope for the best. Instead, I use a consistent loop:
+1. Define the problem precisely.
+
+2. Ask the model to propose architectures and trade-offs, and brainstorm with it.
+
+3. Write a plan (often as a short markdown spec).
+
+4. Let the agent implement.
+
+5. Read everything it generated.
+
+6. Make small logic corrections, add test cases, and ask the agent to write tests.
+
+7. Finish the manual setup and deploy.
+I have also become more opinionated about model choice as the ecosystem has matured. Claude Sonnet has become my default for most development tasks, while I switch to auto routing when the work is straightforward. But the deeper change is not about preference. It is about reliability. The tools themselves have crossed a threshold where end-to-end generation and autonomous debugging no longer feel risky by default.
+In hindsight, that is the clearest signal of progress. The improvement did not come from a single trick or technique. It came from rapid advances in models and tooling. Vibe coding did not just become faster. It became viable for increasingly complex, real-world engineering work.
+________________
+
+
+General thoughts: the “last 30%” is the real work
+In the first half of my internship, GPT-5 did not exist. Now, with new iterations across the ecosystem, including GPT-5.2, Gemini-3, and Claude Opus class models, the ceiling keeps rising. It is increasingly clear that imagination is not the limit of AI applications. It is only the starting line.
+Qubiee today is still a toy system in the scientific sense, not because it is weak, but because it is early. It can likely handle the majority of the problems we throw at it, perhaps 70 percent of what the product ultimately needs.
+The remaining 30 percent is where engineering turns into research. Building evaluation sets, cataloging failure modes, refining routing, keeping humans in the loop, and iterating relentlessly all live here. That final stretch can take orders of magnitude more time than the first. Building a truly excellent AI system is not a single breakthrough. It is sustained craftsmanship, teams of builders, state-of-the-art models, and the discipline to measure reliability as carefully as speed.
+And more than anything else, that is what this build taught me.

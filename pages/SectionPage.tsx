@@ -1,5 +1,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
+import { ArrowRight } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 interface SectionPageProps {
   title: string;
@@ -112,6 +114,14 @@ export const SectionPage: React.FC<SectionPageProps> = ({ title, description }) 
               <p className="text-secondary">
                 I am proud to have brought this vision to life during my final semester of Financial Engineering at Columbia. The experience of building a product from 0 to 1, founding a tech start-up, self-learning, and iterating through collaboration has been an unforgettable milestone. The lessons I learned during this journey are ones I will carry with me throughout my career.
               </p>
+            </section>
+          </RevealOnScroll>
+
+          <RevealOnScroll>
+            <section className="border-t border-white/10 pt-8 mt-8">
+              <Link to="/thoughts/qubiee-ai" className="inline-flex items-center gap-2 text-accent hover:text-white transition-colors group">
+                Thoughts on Building Qubiee (AI) <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </Link>
             </section>
           </RevealOnScroll>
         </div>
