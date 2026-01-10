@@ -9,6 +9,7 @@ interface Article {
     description: string;
     path: string;
     tags: string[];
+    isExternal?: boolean;
 }
 
 const ARTICLES: Article[] = [
@@ -19,6 +20,15 @@ const ARTICLES: Article[] = [
         description: 'Reflecting on building Qubiee\'s AI system: moving from simple tool calling to orchestrated workflows, and what the "last 30%" of engineering really means.',
         path: '/thoughts/qubiee-ai',
         tags: ['AI Engineering', 'Reflection']
+    },
+    {
+        id: 'vibe-coding-2026',
+        title: 'My Year of Vibe Coding',
+        date: 'January 2026',
+        description: 'Reflections on Cursor, AI tools, and building real systems. How "vibe coding" reshaped my engineering process and why the last 30% is still the real work.',
+        path: 'https://llliting.substack.com/p/my-year-of-vibe-coding',
+        tags: ['AI Tools', 'Engineering'],
+        isExternal: true
     }
 ];
 
@@ -32,12 +42,8 @@ export const Thoughts: React.FC = () => {
             </header>
 
             <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-                {ARTICLES.map((article) => (
-                    <Link
-                        key={article.id}
-                        to={article.path}
-                        className="group flex flex-col bg-white/5 border border-white/10 rounded-lg overflow-hidden hover:bg-white/10 transition-all duration-300 hover:shadow-[0_0_30px_rgba(230,220,207,0.1)] hover:-translate-y-1"
-                    >
+                {ARTICLES.map((article) => {
+                    const CardContent = () => (
                         <div className="p-8 flex flex-col h-full">
                             {/* Meta */}
                             <div className="flex items-center justify-between text-xs text-secondary/60 mb-6 font-mono uppercase tracking-wider">
@@ -59,11 +65,35 @@ export const Thoughts: React.FC = () => {
 
                             {/* Footer */}
                             <div className="flex items-center text-accent text-sm font-medium tracking-wide pt-6 border-t border-white/5">
-                                READ REFLECTION <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-2 transition-transform" />
+                                {article.isExternal ? 'READ ON SUBSTACK' : 'READ REFLECTION'} <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-2 transition-transform" />
                             </div>
                         </div>
-                    </Link>
-                ))}
+                    );
+
+                    if (article.isExternal) {
+                        return (
+                            <a
+                                key={article.id}
+                                href={article.path}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="group flex flex-col bg-white/5 border border-white/10 rounded-lg overflow-hidden hover:bg-white/10 transition-all duration-300 hover:shadow-[0_0_30px_rgba(230,220,207,0.1)] hover:-translate-y-1"
+                            >
+                                <CardContent />
+                            </a>
+                        );
+                    }
+
+                    return (
+                        <Link
+                            key={article.id}
+                            to={article.path}
+                            className="group flex flex-col bg-white/5 border border-white/10 rounded-lg overflow-hidden hover:bg-white/10 transition-all duration-300 hover:shadow-[0_0_30px_rgba(230,220,207,0.1)] hover:-translate-y-1"
+                        >
+                            <CardContent />
+                        </Link>
+                    );
+                })}
             </div>
         </div>
     );
